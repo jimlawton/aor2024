@@ -1,4 +1,4 @@
-ipub struct LogQuery<'a> {
+pub struct LogQuery<'a> {
     logs: &'a Vec<String>,
 }
 
@@ -14,13 +14,16 @@ impl<'a> LogQuery<'a> {
     // 3. Create a public method named `search` that accepts a string slice and finds it from the logs and
     //    returns a vector of references to those logs.
     pub fn search(&self, keyword: &str) -> Vec<&'a String> {
-        let mut results = Vec::new();
-        for record in self.logs.iter() {
-            if record.contains(keyword) {
-                results.push(record);
-            }
-        }
-        results
+        // This takes 3-5 ms, uses 88kB:
+        self.logs.iter().filter(|record| {record.contains(keyword)}).collect::<Vec<&'a String>>()
+        // This takes 3-4 ms, uses 88kB (slightly faster):
+        // let mut results = Vec::new();
+        // for record in self.logs.iter() {
+        //     if record.contains(keyword) {
+        //         results.push(record);
+        //     }
+        // }
+        // results
     }
 }
 
