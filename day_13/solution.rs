@@ -50,23 +50,19 @@ impl Kid {
         // 3. Update the code to return meaningful errors
         let mut fields = csv_row.split(',');
         let name = fields.next().ok_or(ParseError::NoName)?.to_string();
-        let good_deeds_str = fields
-            .next()
+        let good_deeds_str = fields.next().map(|s| if s == "" {None} else {Some(s)})
             .ok_or(ParseError::NoGoodDeeds)?;
-        if good_deeds_str == "" {
+        if good_deeds_str.is_none() {
             return Err(ParseError::NoGoodDeeds);
         }
-        let good_deeds = good_deeds_str
-            .parse::<u32>()
+        let good_deeds = good_deeds_str.unwrap().parse::<u32>()
             .map_err(|_| ParseError::InvalidGoodDeeds)?;
-        let bad_deeds_str = fields
-            .next()
+        let bad_deeds_str = fields.next().map(|s| if s == "" {None} else {Some(s)})
             .ok_or(ParseError::NoBadDeeds)?;
-        if bad_deeds_str == "" {
+        if bad_deeds_str.is_none() {
             return Err(ParseError::NoBadDeeds);
         }
-        let bad_deeds = bad_deeds_str
-            .parse::<u32>()
+        let bad_deeds = bad_deeds_str.unwrap().parse::<u32>()
             .map_err(|_| ParseError::InvalidBadDeeds)?;
 
         Kid::new(name, good_deeds, bad_deeds)
